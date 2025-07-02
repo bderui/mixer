@@ -117,7 +117,7 @@ class TypeMixer(BaseTypeMixer):
         if column is None:
             return SKIP_VALUE
 
-        if not column.default:
+        if not hasattr(column, 'default') or not column.default:
             return SKIP_VALUE
 
         if column.default.is_callable:
@@ -172,6 +172,9 @@ class TypeMixer(BaseTypeMixer):
         column = field.scheme
         if isinstance(column, RelationshipProperty):
             column = column.local_remote_pairs[0][0]
+
+        if not hasattr(column, 'autoincrement'):
+            return False
 
         # According to the SQLAlchemy docs, autoincrement "only has an effect for columns which are
         # Integer derived (i.e. INT, SMALLINT, BIGINT) [and] Part of the primary key [...]".
